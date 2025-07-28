@@ -18,6 +18,9 @@ const errorHandler = (error, request, response, next) => {
   if (error.name === "SequelizeDatabaseError") {
     return response.status(400).send({ error: "'likes' is not a number." });
   } else if (error.name === "SequelizeValidationError") {
+    if (error.errors[0].validatorKey === "isEmail") {
+      return response.status(400).send({ error: [error.errors[0].message] });
+    }
     return response
       .status(400)
       .send({ error: "'url' and 'title' must be provided." });
