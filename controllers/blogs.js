@@ -31,6 +31,16 @@ router.get("/:id", blogFinder, async (req, res) => {
   }
 });
 
+router.put("/:id", blogFinder, async (req, res) => {
+  if (req.blog) {
+    req.blog.likes = req.body.likes;
+    await req.blog.save();
+    res.json({ likes: req.blog.likes });
+  } else {
+    res.status(404).end();
+  }
+});
+
 router.delete("/:id", async (req, res) => {
   await Blog.destroy({
     where: {
