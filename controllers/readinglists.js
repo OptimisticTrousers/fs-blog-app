@@ -1,14 +1,14 @@
 const router = require("express").Router();
 
-const UserBlogs = require("../models/user_blogs");
+const { ReadingList } = require("../models");
 
 router.post("/", async (req, res, next) => {
   try {
-    const userBlogs = await UserBlogs.create({
+    const readingList = await ReadingList.create({
       ...req.body,
       read: false,
     });
-    return res.json(userBlogs);
+    return res.json(readingList);
   } catch (error) {
     next(error);
   }
