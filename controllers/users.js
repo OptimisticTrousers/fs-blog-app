@@ -2,6 +2,11 @@ const router = require("express").Router();
 
 const { User, Blog } = require("../models");
 const ReadingList = require("../models/readinglist");
+const {
+  validateUser,
+  validateSession,
+  tokenExtractor,
+} = require("../util/middleware");
 
 router.get("/", async (req, res) => {
   const users = await User.findAll({
@@ -22,20 +27,26 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.put("/:username", async (req, res) => {
-  const user = await User.findOne({
-    where: {
-      username: req.params.username,
-    },
-  });
-  if (user) {
-    user.username = req.body.username;
-    await user.save();
-    res.json(user);
-  } else {
-    res.status(404).end();
+router.put(
+  "/:username",
+  tokenExtractor,
+  validateUser,
+  validateSession,
+  async (req, res) => {
+    const user = await User.findOne({
+      where: {
+        username: req.params.username,
+      },
+    });
+    if (user) {
+      user.username = req.body.username;
+      await user.save();
+      res.json(user);
+    } else {
+      res.status(404).end();
+    }
   }
-});
+);
 
 router.get("/:id", async (req, res) => {
   const where = { userId: req.params.id };
